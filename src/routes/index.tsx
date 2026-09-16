@@ -10,6 +10,7 @@ import sittingLegLeftUpper from "@/assets/deft3r-mascot-sitting-leg-left-upper.p
 import sittingLegLeftLower from "@/assets/deft3r-mascot-sitting-leg-left-lower.png";
 import sittingLegRightUpper from "@/assets/deft3r-mascot-sitting-leg-right-upper.png";
 import sittingLegRightLower from "@/assets/deft3r-mascot-sitting-leg-right-lower.png";
+import meetingHeaderMascot from "@/assets/deft3r-meeting-header-mascot.png";
 
 const mascot = "/media/deft3r-notebook-mascot.png";
 const sleepingMascot = "/media/deft3r-mascot-sleeping.png";
@@ -424,10 +425,20 @@ function Index() {
       <header className={cn("app-header relative z-20 mx-auto flex w-full max-w-6xl items-center justify-end px-5 py-5 sm:px-8", state !== "meeting" && "brand-hero")}>
         <button className="brand-badge" onClick={reset} aria-label="DEFT3R başlangıç ekranı">
           <span className="brand-badge-mascot">
-            <span className="mascot-look block h-full w-full">
-              <img src={mascot} alt="" width={1024} height={1024} className="block h-full w-full object-contain" />
-              <img src={blinkMascot} alt="" aria-hidden="true" width={1024} height={1024} className="mascot-blink absolute inset-0 h-full w-full object-contain" />
-            </span>
+            {state === "meeting" ? (
+              <img
+                src={meetingHeaderMascot}
+                alt="Kalem tutarak oturan mavi DEFT3R maskotu"
+                width={1024}
+                height={1024}
+                className="meeting-header-mascot block h-full w-full object-contain"
+              />
+            ) : (
+              <span className="mascot-look block h-full w-full">
+                <img src={mascot} alt="" width={1024} height={1024} className="block h-full w-full object-contain" />
+                <img src={blinkMascot} alt="" aria-hidden="true" width={1024} height={1024} className="mascot-blink absolute inset-0 h-full w-full object-contain" />
+              </span>
+            )}
           </span>
           <img ref={headerLogoRef} src="/media/teb-ai-mark.png" alt="TEB AI logosu" className="brand-badge-teb object-contain" />
           <div className="brand-badge-text text-left leading-none">
