@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Check, CircleStop, Download, FileText, Loader2, Moon, Pause, Play, RotateCcw, Sun } from "lucide-react";
+import { Check, ChevronDown, CircleStop, Download, FileText, Loader2, Moon, Pause, Play, RotateCcw, Sparkles, Sun } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 
 import { ChromaKeyVideo } from "@/components/chroma-key-video";
@@ -78,9 +78,19 @@ const conversation = [
   { name: "Ayşe", initials: "AY", tone: "coral", time: "00:34", text: "O zaman bu haftanın ana hedefi kullanıcı testleri olsun." },
 ];
 
+const meetingLanguages = [
+  { value: "auto", short: "Otomatik", name: "Otomatik algıla" },
+  { value: "tr", short: "TR Türkçe", name: "Türkçe" },
+  { value: "en", short: "GB English", name: "English" },
+  { value: "ar", short: "SA العربية", name: "العربية" },
+  { value: "uk", short: "UA Українська", name: "Українська" },
+] as const;
+
 function Index() {
   const [state, setState] = useState<AppState>("ready");
   const [title, setTitle] = useState("");
+  const [meetingLanguage, setMeetingLanguage] = useState<(typeof meetingLanguages)[number]["value"]>("auto");
+  const [languageOpen, setLanguageOpen] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [visibleMessages, setVisibleMessages] = useState(0);
   const [notice, setNotice] = useState("");
@@ -368,6 +378,7 @@ function Index() {
   const secondsLabel = String(seconds % 60).padStart(2, "0");
   const time = `${minutesLabel}:${secondsLabel}`;
   const meetingName = title.trim() || "İsimsiz toplantı";
+  const selectedLanguage = meetingLanguages.find((language) => language.value === meetingLanguage) ?? meetingLanguages[0];
 
   function download(fileName: string, content: string) {
     const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
@@ -501,6 +512,42 @@ function Index() {
             <div className="ready-meeting-card notebook-inset mt-6 w-full">
               <label htmlFor="meeting-title" className="sr-only">Toplantı adı</label>
               <textarea id="meeting-title" value={title} onChange={(event) => setTitle(event.target.value)} rows={2} placeholder="Toplantı adı" className="notebook-inset-field w-full resize-none px-4 py-3 text-sm outline-none placeholder:text-muted-foreground" />
+              <div className={cn("language-picker mt-2", languageOpen && "is-open")}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="language-picker-trigger"
+                  aria-expanded={languageOpen}
+                  aria-controls="meeting-language-options"
+                  onClick={() => setLanguageOpen((open) => !open)}
+                >
+                  <span className="language-picker-copy">
+                    <span className="language-picker-label">Toplantı dili</span>
+                    <span className="language-picker-value">{selectedLanguage.name}</span>
+                  </span>
+                  <ChevronDown className="language-picker-chevron" aria-hidden="true" />
+                </Button>
+                <div id="meeting-language-options" className="language-options" role="listbox" aria-label="Toplantı dili">
+                  {meetingLanguages.map((language) => (
+                    <Button
+                      key={language.value}
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      role="option"
+                      aria-selected={meetingLanguage === language.value}
+                      className={cn("language-option", meetingLanguage === language.value && "is-selected")}
+                      onClick={() => {
+                        setMeetingLanguage(language.value);
+                        setLanguageOpen(false);
+                      }}
+                    >
+                      {language.value === "auto" && <Sparkles className="size-3.5" aria-hidden="true" />}
+                      <span>{language.short}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
               <Button className="notebook-inset-action mt-2 w-full" onClick={startMeeting}><Play className="size-4 fill-current" /> Toplantıyı Başlat</Button>
             </div>
             {notice && <p className="mt-3 text-sm font-medium text-destructive">{notice}</p>}
